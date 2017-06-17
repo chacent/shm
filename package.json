@@ -1,6 +1,6 @@
 {
   "name": "chacent",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Node.js共享内存本机模块",
   "main": "addon.js",
   "gypfile": true,
