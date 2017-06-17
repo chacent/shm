@@ -1,12 +1,26 @@
 {
-  "name": "shm",
-  "version": "0.0.0",
-  "description": "Node.js共享内存本机模块",
+  "name": "chacent",
+  "version": "0.1.4",
+  "description": "Node.js鍏变韩鍐呭瓨鏈満妯″潡",
   "main": "addon.js",
-  "private": true,
   "gypfile": true,
   "dependencies": {
     "bindings": "~1.2.1",
     "nan": "^2.0.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://chacent@github.com/chacent/shm.git"
+  },
+  "keywords": [
+    "share",
+    "memory"
+  ],
+  "author": "chacent",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chacent/shm/issues"
+  },
+  "homepage": "https://github.com/chacent/shm#readme"
 }

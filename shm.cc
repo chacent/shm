@@ -58,6 +58,7 @@ NAN_MODULE_INIT(SharedMemory::Init) {
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 	Nan::SetPrototypeMethod(tpl, "truncate", Truncate);
+	Nan::SetPrototypeMethod(tpl, "size", Size);
 	Nan::SetPrototypeMethod(tpl, "remove", Remove);
 	Nan::SetPrototypeMethod(tpl, "map", Map);
 	v8::Local<v8::Function> func = Nan::GetFunction(tpl).ToLocalChecked();
@@ -111,6 +112,18 @@ NAN_METHOD(SharedMemory::Truncate) {
 		uint32_t size = Nan::To<uint32_t>(info[0]).FromJust();
 		SharedMemory* obj = ObjectWrap::Unwrap<SharedMemory>(info.Holder());
 		obj->_data->truncate(size);
+	}
+	catch (std::exception& e) {
+		Nan::ThrowError(e.what());
+	}
+}
+
+NAN_METHOD(SharedMemory::Size) {
+	try {
+		SharedMemory* obj = ObjectWrap::Unwrap<SharedMemory>(info.Holder());
+		boost::interprocess::offset_t size;
+		obj->_data->get_size(size);
+		info.GetReturnValue().Set(Nan::New((unsigned)size));
 	}
 	catch (std::exception& e) {
 		Nan::ThrowError(e.what());

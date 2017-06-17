@@ -2,6 +2,8 @@
 #define MYOBJECT_H
 
 #include <nan.h>
+#define BOOST_ALL_NO_LIB
+#define BOOST_LIB_DIAGNOSTIC
 #include <boost/interprocess/shared_memory_object.hpp>
 
 class SharedMemory : public Nan::ObjectWrap {
@@ -14,6 +16,7 @@ private:
 
 	static NAN_METHOD(New);
 	static NAN_METHOD(Truncate);
+	static NAN_METHOD(Size);
 	static NAN_METHOD(Remove);
 	static NAN_METHOD(Map);
 	static Nan::Persistent<v8::Function> constructor;
