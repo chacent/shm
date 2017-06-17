@@ -2,7 +2,9 @@
 
 nodejs 共享内存本机插件
 
-需要安装boost头文件
+不再需要安装boost头文件,已经将必要头文件提取
+
+安装 npm install chacent
 
 const shm  = require('chacent');
 
