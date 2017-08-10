@@ -109,7 +109,7 @@ NAN_METHOD(SharedMemory::Truncate) {
 			Nan::ThrowTypeError("wrong arguments");
 			return;
 		}
-		uint32_t size = Nan::To<uint32_t>(info[0]).FromJust();
+		int64_t size = Nan::To<int64_t>(info[0]).FromJust();
 		SharedMemory* obj = ObjectWrap::Unwrap<SharedMemory>(info.Holder());
 		obj->_data->truncate(size);
 	}
@@ -123,7 +123,7 @@ NAN_METHOD(SharedMemory::Size) {
 		SharedMemory* obj = ObjectWrap::Unwrap<SharedMemory>(info.Holder());
 		boost::interprocess::offset_t size;
 		obj->_data->get_size(size);
-		info.GetReturnValue().Set(Nan::New((unsigned)size));
+		info.GetReturnValue().Set(Nan::New((double)size));
 	}
 	catch (std::exception& e) {
 		Nan::ThrowError(e.what());
@@ -158,22 +158,22 @@ NAN_METHOD(SharedMemory::Map) {
 			return;
 		}
 		unsigned mode = Nan::To<uint32_t>(info[0]).FromJust();
-		unsigned offset = 0;
+		int64_t offset = 0;
 		boost::interprocess::offset_t size;
 		if (argc > 1) {
-			if (!info[1]->IsUint32()) {
+			if (!info[1]->IsNumber()) {
 				Nan::ThrowTypeError("wrong arguments");
 				return;
 			}
-			offset = Nan::To<uint32_t>(info[1]).FromJust();
+			offset = Nan::To<int64_t>(info[1]).FromJust();
 		}
 		SharedMemory* obj = ObjectWrap::Unwrap<SharedMemory>(info.Holder());
 		if (argc> 2) {
-			if (!info[2]->IsUint32()) {
+			if (!info[2]->IsNumber()) {
 				Nan::ThrowTypeError("wrong arguments");
 				return;
 			}
-			size = Nan::To<uint32_t>(info[2]).FromJust();
+			size = Nan::To<int64_t>(info[2]).FromJust();
 		}
 		else {
 			obj->_data->get_size(size);
