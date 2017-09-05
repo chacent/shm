@@ -1,7 +1,12 @@
 #include "shm.h"
-
 #include <boost/interprocess/mapped_region.hpp>
-
+#include <iostream>
+#ifdef WIN32  
+#include <atlbase.h>
+#define ToUft8(str) CW2A(CA2W(str), CP_UTF8)
+#else  
+#define ToUft8(str) str
+#endif  
 
 enum OpenType {
 	create_only,
@@ -83,7 +88,8 @@ NAN_METHOD(SharedMemory::New) {
 			Nan::ThrowTypeError("wrong arguments");
 			return;
 		}
-		const char* name = *(Nan::Utf8String(info[0]));
+		Nan::Utf8String strName(info[0]);
+		const char* name = *strName;
 		uint32_t type = Nan::To<uint32_t>(info[1]).FromJust();
 		uint32_t mode = Nan::To<uint32_t>(info[2]).FromJust();
 		try {
@@ -92,14 +98,19 @@ NAN_METHOD(SharedMemory::New) {
 			info.GetReturnValue().Set(info.This());
 		}
 		catch (std::exception& e) {
-			Nan::ThrowError(e.what());
+			Nan::ThrowError(ToUft8(e.what()));
 		}
 	}
 	else {
 		const int argc = 3;
 		v8::Local<v8::Value> argv[argc] = { info[0],info[1],info[2] };
 		v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
-		info.GetReturnValue().Set(cons->NewInstance(argc, argv));
+		v8::Isolate* isolate = info.GetIsolate();
+		v8::Local<v8::Context> context = isolate->GetCurrentContext();
+		v8::MaybeLocal<v8::Object> obj = cons->NewInstance(context, argc, argv);
+		if (!obj.IsEmpty()) {
+			info.GetReturnValue().Set(obj.ToLocalChecked());
+		}
 	}
 }
 
@@ -114,19 +125,19 @@ NAN_METHOD(SharedMemory::Truncate) {
 		obj->_data->truncate(size);
 	}
 	catch (std::exception& e) {
-		Nan::ThrowError(e.what());
+		Nan::ThrowError(ToUft8(e.what()));
 	}
 }
 
 NAN_METHOD(SharedMemory::Size) {
 	try {
 		SharedMemory* obj = ObjectWrap::Unwrap<SharedMemory>(info.Holder());
-		boost::interprocess::offset_t size;
+		boost::interprocess::offset_t size = 0;
 		obj->_data->get_size(size);
 		info.GetReturnValue().Set(Nan::New((double)size));
 	}
 	catch (std::exception& e) {
-		Nan::ThrowError(e.what());
+		Nan::ThrowError(ToUft8(e.what()));
 	}
 }
 
@@ -137,7 +148,7 @@ NAN_METHOD(SharedMemory::Remove) {
 		boost::interprocess::shared_memory_object::remove(obj->_data->get_name());
 	}
 	catch (std::exception& e) {
-		Nan::ThrowError(e.what());
+		Nan::ThrowError(ToUft8(e.what()));
 	}
 }
 
@@ -159,7 +170,7 @@ NAN_METHOD(SharedMemory::Map) {
 		}
 		unsigned mode = Nan::To<uint32_t>(info[0]).FromJust();
 		int64_t offset = 0;
-		boost::interprocess::offset_t size;
+		boost::interprocess::offset_t size=0;
 		if (argc > 1) {
 			if (!info[1]->IsNumber()) {
 				Nan::ThrowTypeError("wrong arguments");
@@ -183,6 +194,6 @@ NAN_METHOD(SharedMemory::Map) {
 		info.GetReturnValue().Set(Nan::NewBuffer((char*)region->get_address(),size, free_callback, region).ToLocalChecked());
 	}
 	catch (std::exception& e) {
-		Nan::ThrowError(e.what());
+		Nan::ThrowError(ToUft8(e.what()));
 	}
 }

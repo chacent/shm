@@ -19,6 +19,7 @@ private:
 	static NAN_METHOD(Size);
 	static NAN_METHOD(Remove);
 	static NAN_METHOD(Map);
+
 	static Nan::Persistent<v8::Function> constructor;
 };
 
